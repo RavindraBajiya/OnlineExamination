@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "483981282504",
+    "firebase_url": "https://onlineexamination-51dc0.firebaseio.com",
+    "project_id": "onlineexamination-51dc0",
+    "storage_bucket": "onlineexamination-51dc0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:483981282504:android:efc7f8dc99449579",
+        "android_client_info": {
+          "package_name": "com.example.ravindra.onlineexamination"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "483981282504-vqkvtkfibvsr4k9gi1h6bsj62c75fi58.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ravindra.onlineexamination",
+            "certificate_hash": "650d9ee35adc3ece44d9899f7dc743d052aca78b"
+          }
+        },
+        {
+          "client_id": "483981282504-bt9of1smfvibfluevn2cne2fo7sd5ter.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCEaNyeqjWUEg7Ht59HTVb8WCobqglXxRw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "483981282504-bt9of1smfvibfluevn2cne2fo7sd5ter.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

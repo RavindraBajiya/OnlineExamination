@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#f0724f</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#e1c7ba</color>
+    <color name="textColor">#fddcc9</color>
+    <color name="navColor">#4815ae</color>
+    <color name="textColorb">#181717</color>
+    <color name="notAnswered">#f8e71f</color>
+    <color name="answered">#417507</color>
+    <color name="notVisited">#d7d9db</color>
+    <color name="backgroundColor">#ff8b68</color>
+    <color name="ansColor">#979797</color>
+
+</resources>
