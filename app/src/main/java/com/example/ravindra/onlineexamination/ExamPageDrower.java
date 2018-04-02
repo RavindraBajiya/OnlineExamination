@@ -72,12 +72,13 @@ public class ExamPageDrower extends AppCompatActivity
         english.setOnClickListener(this);
         gridView = findViewById(R.id.questionsItem);
         db = FirebaseFirestore.getInstance();
-        DatabaseReference myRef = database.getReference("questions/ques_tot");
+        DatabaseReference myRef = database.getReference("papers/test1/tot_q");
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                question = Integer.parseInt(dataSnapshot.child("ques").getValue().toString());
-                MyAdapter adapter = new MyAdapter(ExamPageDrower.this, question);
+                question = Integer.parseInt(dataSnapshot.getValue().toString());
+                attempt = new boolean[question];
+                MyAdapter adapter = new MyAdapter(ExamPageDrower.this, question, attempt);
                 gridView.setAdapter(adapter);
                 loadEnglish(1);
             }
@@ -88,7 +89,6 @@ public class ExamPageDrower extends AppCompatActivity
                 Log.w("aaa", "Failed to read value.", error.toException());
             }
         });
-        attempt = new boolean[question];
         saveAndNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -124,7 +124,9 @@ public class ExamPageDrower extends AppCompatActivity
 
             @Override
             public void onDrawerOpened(@NonNull View drawerView) {
-
+                MyAdapter myAdapter = new MyAdapter(ExamPageDrower.this, question, attempt);
+                gridView.setAdapter(myAdapter);
+                Toast.makeText(ExamPageDrower.this, "drawerOpened", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -207,7 +209,7 @@ public class ExamPageDrower extends AppCompatActivity
 
     void loadEnglish(final int questionNumber) {
         lan = true;
-        DatabaseReference myRef = database.getReference("questions/questions/q" + questionNumber);
+        DatabaseReference myRef = database.getReference("papers/test1/questions/q" + questionNumber);
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -223,6 +225,7 @@ public class ExamPageDrower extends AppCompatActivity
                 r3.setText(o3);
                 r4.setText(o4);
                 ques.setText(ques1);
+                attempt[questionNumber-1] = true;
                 btnqdt.setText(questionNumber + "/" + question);
             }
 
@@ -265,14 +268,14 @@ public class ExamPageDrower extends AppCompatActivity
         LayoutInflater layoutInflater;
         int question;
         Context context;
+        boolean attempt[];
 
-        public MyAdapter(Context context, int question) {
+
+        public MyAdapter(Context context, int question, boolean[] attempt) {
             this.context = context;
             layoutInflater = LayoutInflater.from(context);
             this.question = question;
-        }
-
-        public MyAdapter() {
+            this.attempt = attempt;
         }
 
         @Override
@@ -295,7 +298,10 @@ public class ExamPageDrower extends AppCompatActivity
 
             convertView = layoutInflater.inflate(R.layout.drawerlayout, null);
             v = convertView.findViewById(R.id.drawerLayoutButton);
-            v.setBackground(getDrawable(R.drawable.notvisitedbtn));
+            if (attempt[position]) {
+                v.setBackground(getDrawable(R.drawable.visitedbtn));
+            } else
+                v.setBackground(getDrawable(R.drawable.notvisitedbtn));
             v.setText((position + 1) + "");
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -310,5 +316,3 @@ public class ExamPageDrower extends AppCompatActivity
         }
     }
 }
-
-

@@ -17,6 +17,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.wang.avi.AVLoadingIndicatorView;
 
@@ -26,12 +28,14 @@ public class SignUp extends AppCompatActivity {
     Button signUpBtn;
     ImageView imageView;
     FirebaseAuth mAuth;
+    FirebaseDatabase database;
     private AVLoadingIndicatorView avi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+        database = FirebaseDatabase.getInstance();
         nameT = findViewById(R.id.signUpName);
         emailT = findViewById(R.id.signUpEmail);
         phoneT = findViewById(R.id.signUpNumber);
@@ -95,6 +99,7 @@ public class SignUp extends AppCompatActivity {
                                 avi.hide();
                                 updateUI(user);
                                 saveData(user,name,mobile);
+                                createMenu(user);
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Log.w("aaa", "createUserWithEmail:failure", task.getException());
@@ -110,12 +115,29 @@ public class SignUp extends AppCompatActivity {
         }
     }
 
+    private void createMenu(FirebaseUser user) {
+        String uid = user.getUid();
+        DatabaseReference myRef = database.getReference("users/"+uid+"/menu/");
+        SetMenu menu = new SetMenu("Main Examination",false);
+        myRef.child("1").setValue(menu);
+        menu.setName("Test Examination");
+        menu.setStatus(true);
+        myRef.child("2").setValue(menu);
+        menu.setName("Result");
+        menu.setStatus(true);
+        myRef.child("3").setValue(menu);
+        menu.setName("Updates");
+        menu.setStatus(true);
+        myRef.child("4").setValue(menu);
+
+    }
+
     private void saveData(FirebaseUser user, String name, String mobile) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
         String uid = user.getUid();
         DataModel dataModel = new DataModel(name,mobile);
-        Toast.makeText(this, "saving data...", Toast.LENGTH_SHORT).show();
-        db.collection("users_info").document(uid).set(dataModel).addOnCompleteListener(new OnCompleteListener<Void>() {
+        // Write a message to the database
+        DatabaseReference myRef = database.getReference("users/"+uid+"/user_info");
+        myRef.setValue(dataModel).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 Intent intent = new Intent(SignUp.this,MainActivity.class);
@@ -123,8 +145,14 @@ public class SignUp extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-    }
+      /*  Toast.makeText(this, "saving data...", Toast.LENGTH_SHORT).show();
+        db.collection("users_info").document(uid).set(dataModel).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
 
+            }
+        });*/
+    }
     private void updateUI(FirebaseUser user) {
         if (user == null){
             Toast.makeText(this, "User Can't Created", Toast.LENGTH_SHORT).show();

@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +26,11 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -58,45 +64,35 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-    /*  //  flag = getIntent().getBooleanExtra("value", false);
-        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putBoolean("flag", flag);
-        editor.apply();
-        flag = sharedPref.getBoolean("flag",true);*/
+
         user = mAuth.getCurrentUser();
-//       String email = getIntent().getStringExtra("email");
         assert user != null;
         String uid = user.getUid();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-      /* // if (!flag) {
-            name.setText(user.getDisplayName());
-            if (user.getPhotoUrl()!=null) {
-                Glide.with(this).load(user.getPhotoUrl())
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .skipMemoryCache(true)
-                        .into(dp);
-         //   }*/
-       // } else {
-            downloadImg();
-            dp.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    uploadDp();
-                }
-            });
-            DocumentReference docRef = db.collection("users_info").document(uid);
-            docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    DataModel dataModel = documentSnapshot.toObject(DataModel.class);
-                    String name1 = dataModel.getName();
-                    name.setText(name1);
-                }
-            });
-      //  }
-    }
+        downloadImg();
+        dp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                uploadDp();
+            }
+        });
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("users/" + uid + "/user_info");
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String name1 = dataSnapshot.child("name").getValue().toString();
+                String mobile = dataSnapshot.child("phone").getValue().toString();
+                name.setText(name1);
+            }
 
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w("aaa", "Failed to read value.", error.toException());
+            }
+        });
+    }
     private void downloadImg() {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReferenceFromUrl("gs://onlineexamination-51dc0.appspot.com/images/users/profile_pic").child(mAuth.getUid()+".jpg");
