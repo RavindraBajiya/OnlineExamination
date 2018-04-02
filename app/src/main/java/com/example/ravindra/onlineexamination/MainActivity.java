@@ -194,8 +194,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Toast.makeText(this, "First Button", Toast.LENGTH_SHORT).show();
         }
         else if (id == R.id.HomeButtonTwo){
-            Toast.makeText(this, "Second Button", Toast.LENGTH_SHORT).show();
-
+            Intent intent = new Intent(this,ExaminationList.class);
+            startActivity(intent);
         }
         else if(id == R.id.HomeButtonThree){
             Toast.makeText(this, "Third Button", Toast.LENGTH_SHORT).show();
