@@ -35,7 +35,7 @@ import com.google.firebase.storage.StorageReference;
 import java.io.File;
 import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private FirebaseAuth mAuth;
     FirebaseUser user;
     TextView name;
@@ -53,6 +53,11 @@ public class MainActivity extends AppCompatActivity {
         menu2 = findViewById(R.id.HomeButtonTwo);
         menu3 = findViewById(R.id.HomeButtonThree);
         menu4 = findViewById(R.id.HomeButtonFour);
+        menu1.setOnClickListener(this);
+        menu2.setOnClickListener(this);
+        menu3.setOnClickListener(this);
+        menu4.setOnClickListener(this);
+
         dp = findViewById(R.id.homeImageView);
         name = findViewById(R.id.homePersonName);
         user = mAuth.getCurrentUser();
@@ -99,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
                     setMenu.setStatus((boolean) dataSnapshot.child("status").getValue());
 
                     if (setMenu.getStatus()) {
-                        switch (i){
+                        switch (i) {
                             case 1:
                                 menu1.setVisibility(View.VISIBLE);
                                 menu1.setText(setMenu.getName());
@@ -116,10 +121,10 @@ public class MainActivity extends AppCompatActivity {
                                 menu4.setVisibility(View.VISIBLE);
                                 menu4.setText(setMenu.getName());
                                 break;
-                                default:
-                                    Toast.makeText(MainActivity.this, "Menu Not Found", Toast.LENGTH_SHORT).show();
+                            default:
+                                Toast.makeText(MainActivity.this, "Menu Not Found", Toast.LENGTH_SHORT).show();
                         }
-                        
+
                     }
                 }
             }
@@ -180,5 +185,25 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return true;
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        if (id == R.id.HomeButtonOne){
+            Toast.makeText(this, "First Button", Toast.LENGTH_SHORT).show();
+        }
+        else if (id == R.id.HomeButtonTwo){
+            Toast.makeText(this, "Second Button", Toast.LENGTH_SHORT).show();
+
+        }
+        else if(id == R.id.HomeButtonThree){
+            Toast.makeText(this, "Third Button", Toast.LENGTH_SHORT).show();
+
+        }
+        else if (id == R.id.HomeButtonFour){
+            Toast.makeText(this, "Fourth Button", Toast.LENGTH_SHORT).show();
+
+        }
     }
 }
