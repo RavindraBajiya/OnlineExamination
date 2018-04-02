@@ -63,7 +63,7 @@
         <activity android:name=".galleryimages.PhotosActivity" />
         <activity android:name=".galleryimages.PhotoShow" />
         <activity android:name=".galleryimages.UploadImage" />
-        <activity android:name=".Menu"></activity>
+        <activity android:name=".ExaminationList"></activity>
     </application>
 
 </manifest>

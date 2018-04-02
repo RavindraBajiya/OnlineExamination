@@ -5,7 +5,7 @@ import android.os.Bundle;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class Menu extends AppCompatActivity {
+public class ExaminationList extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
