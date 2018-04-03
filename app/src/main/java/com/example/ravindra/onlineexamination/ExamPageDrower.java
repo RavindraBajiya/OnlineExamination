@@ -46,9 +46,11 @@ public class ExamPageDrower extends AppCompatActivity
     DocumentReference documentReference;
     int num = 1;
     Button v;
+    String test;
     boolean attempt[];
     Button btnqdt, maximumMarks, minusMarking;
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    FirebaseDatabase database;
+    DrawerLayout drawer;
 
 
     @Override
@@ -57,6 +59,8 @@ public class ExamPageDrower extends AppCompatActivity
         setContentView(R.layout.activity_exam_page_drower);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        test = getIntent().getStringExtra("exam");
+        database = MainActivity.databaseObject();
         saveAndNext = findViewById(R.id.saveandNext);
         btnqdt = findViewById(R.id.button4);
         maximumMarks = findViewById(R.id.button5);
@@ -184,7 +188,7 @@ public class ExamPageDrower extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         Toast.makeText(this, "fjalkfj", Toast.LENGTH_SHORT).show();
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -209,7 +213,7 @@ public class ExamPageDrower extends AppCompatActivity
 
     void loadEnglish(final int questionNumber) {
         lan = true;
-        DatabaseReference myRef = database.getReference("papers/test1/questions/q" + questionNumber);
+        DatabaseReference myRef = database.getReference("papers/"+test+"/questions/q" + questionNumber);
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -310,6 +314,9 @@ public class ExamPageDrower extends AppCompatActivity
                     loadEnglish(position + 1);
                     v.setBackground(getDrawable(R.drawable.visitedbtn));
                     num = position + 1;
+                    drawer = findViewById(R.id.drawer_layout);
+                    drawer.closeDrawer(GravityCompat.START);
+
                 }
             });
             return convertView;

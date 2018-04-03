@@ -99,7 +99,6 @@ public class SignUp extends AppCompatActivity {
                                 avi.hide();
                                 updateUI(user);
                                 saveData(user,name,mobile);
-                                createMenu(user);
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Log.w("aaa", "createUserWithEmail:failure", task.getException());
@@ -115,27 +114,11 @@ public class SignUp extends AppCompatActivity {
         }
     }
 
-    private void createMenu(FirebaseUser user) {
-        String uid = user.getUid();
-        DatabaseReference myRef = database.getReference("users/"+uid+"/menu/");
-        SetMenu menu = new SetMenu("Main Examination",false);
-        myRef.child("1").setValue(menu);
-        menu.setName("Test Examination");
-        menu.setStatus(true);
-        myRef.child("2").setValue(menu);
-        menu.setName("Result");
-        menu.setStatus(true);
-        myRef.child("3").setValue(menu);
-        menu.setName("Updates");
-        menu.setStatus(true);
-        myRef.child("4").setValue(menu);
-
-    }
-
     private void saveData(FirebaseUser user, String name, String mobile) {
         String uid = user.getUid();
         DataModel dataModel = new DataModel(name,mobile);
         // Write a message to the database
+        Toast.makeText(this, "saving data...", Toast.LENGTH_SHORT).show();
         DatabaseReference myRef = database.getReference("users/"+uid+"/user_info");
         myRef.setValue(dataModel).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
@@ -145,8 +128,7 @@ public class SignUp extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-      /*  Toast.makeText(this, "saving data...", Toast.LENGTH_SHORT).show();
-        db.collection("users_info").document(uid).set(dataModel).addOnCompleteListener(new OnCompleteListener<Void>() {
+      /*  db.collection("users_info").document(uid).set(dataModel).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
 

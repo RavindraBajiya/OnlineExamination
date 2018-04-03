@@ -14,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,14 +42,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextView name;
     ImageView dp;
     Button menu1, menu2, menu3, menu4;
-    FirebaseDatabase database;
-
+    static FirebaseDatabase database;
+    FirebaseDatabase database1;
+    DataModel model;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mAuth = FirebaseAuth.getInstance();
-        database = FirebaseDatabase.getInstance();
+        database1 = MainActivity.databaseObject();
         menu1 = findViewById(R.id.HomeButtonOne);
         menu2 = findViewById(R.id.HomeButtonTwo);
         menu3 = findViewById(R.id.HomeButtonThree);
@@ -57,13 +59,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         menu2.setOnClickListener(this);
         menu3.setOnClickListener(this);
         menu4.setOnClickListener(this);
-
         dp = findViewById(R.id.homeImageView);
         name = findViewById(R.id.homePersonName);
         user = mAuth.getCurrentUser();
         assert user != null;
         String uid = user.getUid();
-        getMenu(uid);
+        getMenu();
         downloadImg();
         dp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,13 +72,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 uploadDp();
             }
         });
-        DatabaseReference myRef = database.getReference("users/" + uid + "/user_info");
+        DatabaseReference myRef = database1.getReference("users/" + uid + "/user_info");
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String name1 = dataSnapshot.child("name").getValue().toString();
-                String mobile = dataSnapshot.child("phone").getValue().toString();
-                name.setText(name1);
+                if (dataSnapshot.exists()) {
+                    String name1 = dataSnapshot.child("name").getValue().toString();
+                    String mobile = dataSnapshot.child("phone").getValue().toString();
+                    model = new DataModel(name1, mobile);
+                    name.setText(name1);
+                }
             }
 
             @Override
@@ -88,43 +92,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    private void getMenu(String uid) {
+    private void getMenu() {
         for (int i = 1; i <= 4; i++)
-            getMenuItems(uid, i);
+            getMenuItems(i);
     }
 
-    private void getMenuItems(String uid, final int i) {
-        DatabaseReference myRef = database.getReference("users/" + uid + "/menu/" + i);
+    private void getMenuItems(final int i) {
+        DatabaseReference myRef = database.getReference("menu_list/" + i);
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    SetMenu setMenu = new SetMenu();
-                    setMenu.setName(dataSnapshot.child("name").getValue().toString());
-                    setMenu.setStatus((boolean) dataSnapshot.child("status").getValue());
-
-                    if (setMenu.getStatus()) {
-                        switch (i) {
-                            case 1:
-                                menu1.setVisibility(View.VISIBLE);
-                                menu1.setText(setMenu.getName());
-                                break;
-                            case 2:
-                                menu2.setVisibility(View.VISIBLE);
-                                menu2.setText(setMenu.getName());
-                                break;
-                            case 3:
-                                menu3.setVisibility(View.VISIBLE);
-                                menu3.setText(setMenu.getName());
-                                break;
-                            case 4:
-                                menu4.setVisibility(View.VISIBLE);
-                                menu4.setText(setMenu.getName());
-                                break;
-                            default:
-                                Toast.makeText(MainActivity.this, "Menu Not Found", Toast.LENGTH_SHORT).show();
-                        }
-
+                    Log.d("rkb",dataSnapshot.toString());
+                    switch(i){
+                        case 1:
+                            menu1.setText(dataSnapshot.getValue().toString());
+                            menu1.setVisibility(View.VISIBLE);
+                            break;
+                        case 2:
+                            menu2.setText(dataSnapshot.getValue().toString());
+                            menu2.setVisibility(View.VISIBLE);
+                            break;
+                        case 3:
+                            menu3.setText(dataSnapshot.getValue().toString());
+                            menu3.setVisibility(View.VISIBLE);
+                            break;
+                        case 4:
+                            menu4.setText(dataSnapshot.getValue().toString());
+                            menu4.setVisibility(View.VISIBLE);
+                            break;
                     }
                 }
             }
@@ -191,7 +187,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.HomeButtonOne){
-            Toast.makeText(this, "First Button", Toast.LENGTH_SHORT).show();
+            DatabaseReference reference = database1.getReference("resister/"+model.getPhone());
+            reference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()){
+                        if (dataSnapshot.getValue().toString()=="true"){
+                            Toast.makeText(MainActivity.this, "resistered User", Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            Toast.makeText(MainActivity.this, "not resistered user", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                   else{
+                        Toast.makeText(MainActivity.this, "not resistered", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Toast.makeText(MainActivity.this, "cancelled : "+databaseError, Toast.LENGTH_SHORT).show();
+                }
+            });
         }
         else if (id == R.id.HomeButtonTwo){
             Intent intent = new Intent(this,ExaminationList.class);
@@ -206,4 +223,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         }
     }
+    public static FirebaseDatabase databaseObject(){
+        if(database==null){
+            database = FirebaseDatabase.getInstance();
+            database.setPersistenceEnabled(true);
+        }
+        return database;
+   }
 }
