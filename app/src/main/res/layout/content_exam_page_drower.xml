@@ -37,34 +37,6 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/languageHindi"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/hindi"
-            android:textColor="@color/textColor"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/languageEnglish"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/english"
-            android:textColor="@color/textColor"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/languageHindi"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
             android:id="@+id/time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -147,7 +119,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
-                android:text="Que. Who is india's Prime Minister ?"
+                android:text="Loading..."
                 android:textColor="@color/textColorb"
                 android:textSize="20sp" />
 
@@ -162,7 +134,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Narendra Modi"
+                    android:text="Loading..."
                     android:textColor="@color/ansColor"/>
 
                 <RadioButton
@@ -170,7 +142,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Devendra Fadanvis"
+                    android:text="Loading... "
                     android:textColor="@color/ansColor"/>
 
                 <RadioButton
@@ -178,7 +150,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Manmohan Singh"
+                    android:text="Loading..."
                     android:textColor="@color/ansColor"/>
 
                 <RadioButton
@@ -186,7 +158,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Raj Thakre"
+                    android:text="Loading..."
                     android:textColor="@color/ansColor"/>
             </RadioGroup>
         </LinearLayout>

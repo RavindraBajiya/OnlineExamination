@@ -118,7 +118,6 @@ public class SignUp extends AppCompatActivity {
         String uid = user.getUid();
         DataModel dataModel = new DataModel(name,mobile);
         // Write a message to the database
-        Toast.makeText(this, "saving data...", Toast.LENGTH_SHORT).show();
         DatabaseReference myRef = database.getReference("users/"+uid+"/user_info");
         myRef.setValue(dataModel).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override

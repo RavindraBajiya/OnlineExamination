@@ -1,8 +1,13 @@
 package com.example.ravindra.onlineexamination;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,8 +43,8 @@ public class ExamPageDrower extends AppCompatActivity
     GridView gridView;
     FirebaseFirestore db;
     TextView ques;
+    TextView time;
     RadioButton r1, r2, r3, r4;
-    TextView hindi, english;
     int question;
     Button saveAndNext;
     Boolean lan;
@@ -59,6 +64,17 @@ public class ExamPageDrower extends AppCompatActivity
         setContentView(R.layout.activity_exam_page_drower);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        time = findViewById(R.id.time);
+        new CountDownTimer(3600000, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                time.setText("seconds remaining: " + millisUntilFinished / 1000);
+            }
+
+            public void onFinish() {
+                time.setText("done!");
+            }
+        }.start();
         test = getIntent().getStringExtra("exam");
         database = MainActivity.databaseObject();
         saveAndNext = findViewById(R.id.saveandNext);
@@ -70,10 +86,6 @@ public class ExamPageDrower extends AppCompatActivity
         r2 = findViewById(R.id.ansRadio2);
         r3 = findViewById(R.id.ansRadio3);
         r4 = findViewById(R.id.ansRadio4);
-        hindi = findViewById(R.id.languageHindi);
-        english = findViewById(R.id.languageEnglish);
-        hindi.setOnClickListener(this);
-        english.setOnClickListener(this);
         gridView = findViewById(R.id.questionsItem);
         db = FirebaseFirestore.getInstance();
         DatabaseReference myRef = database.getReference("papers/test1/tot_q");
@@ -155,8 +167,34 @@ public class ExamPageDrower extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setMessage("Are You Sure You Want To Finish The Exam.");
+            alertDialogBuilder.setPositiveButton("Yes",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface arg0, int arg1) {
+                            back();
+                            Toast.makeText(ExamPageDrower.this, "Finished", Toast.LENGTH_SHORT).show();
+
+                        }
+                    });
+
+            alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Toast.makeText(ExamPageDrower.this, "Continue...", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+
         }
+
+    }
+
+    private void back() {
+            super.onBackPressed();
     }
 
     @Override
@@ -196,24 +234,13 @@ public class ExamPageDrower extends AppCompatActivity
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        if (id == R.id.languageEnglish) {
-            if (num <= question) {
-                loadEnglish(num);
-            }
-
-        } else if (id == R.id.languageHindi) {
-            if (num <= question) {
-                loadHindi(num);
-            }
-        } else {
-            Toast.makeText(this, "No More Questions.", Toast.LENGTH_SHORT).show();
-        }
+        Toast.makeText(this, "No More Questions.", Toast.LENGTH_SHORT).show();
     }
 
 
     void loadEnglish(final int questionNumber) {
         lan = true;
-        DatabaseReference myRef = database.getReference("papers/"+test+"/questions/q" + questionNumber);
+        DatabaseReference myRef = database.getReference("papers/" + test + "/questions/q" + questionNumber);
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -229,7 +256,7 @@ public class ExamPageDrower extends AppCompatActivity
                 r3.setText(o3);
                 r4.setText(o4);
                 ques.setText(ques1);
-                attempt[questionNumber-1] = true;
+                attempt[questionNumber - 1] = true;
                 btnqdt.setText(questionNumber + "/" + question);
             }
 
@@ -297,6 +324,7 @@ public class ExamPageDrower extends AppCompatActivity
             return position;
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
 

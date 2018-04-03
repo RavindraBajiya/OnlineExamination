@@ -93,7 +93,7 @@ public class PhotoShow extends AppCompatActivity {
                             progressDialog.dismiss();
                             Toast.makeText(PhotoShow.this, "Uploaded", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(PhotoShow.this,MainActivity.class);
-                            finishFromChild(PhotoShow.this);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
                         }
                     })
