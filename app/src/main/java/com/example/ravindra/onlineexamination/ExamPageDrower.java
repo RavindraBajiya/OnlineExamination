@@ -37,6 +37,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.wang.avi.AVLoadingIndicatorView;
+
+import java.util.ArrayList;
 
 public class ExamPageDrower extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, AdapterView.OnItemClickListener {
@@ -56,6 +59,8 @@ public class ExamPageDrower extends AppCompatActivity
     Button btnqdt, maximumMarks, minusMarking;
     FirebaseDatabase database;
     DrawerLayout drawer;
+    ArrayList<QuestionsObj> questionsObjs;
+    AVLoadingIndicatorView avi;
 
 
     @Override
@@ -65,10 +70,19 @@ public class ExamPageDrower extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         time = findViewById(R.id.time);
+        avi = findViewById(R.id.avi);
+        avi.show();
+        questionsObjs = new ArrayList<>();
         new CountDownTimer(3600000, 1000) {
 
             public void onTick(long millisUntilFinished) {
-                time.setText("seconds remaining: " + millisUntilFinished / 1000);
+//                time.setText("seconds remaining: " + millisUntilFinished / 1000);
+                int sec = (int) (millisUntilFinished / 1000);
+                int hour = sec / 3600;
+                sec = sec % 3600;
+                int min = sec / 60;
+                sec = sec % 60;
+                time.setText(hour + ":" + min + ":" + sec);
             }
 
             public void onFinish() {
@@ -96,7 +110,6 @@ public class ExamPageDrower extends AppCompatActivity
                 attempt = new boolean[question];
                 MyAdapter adapter = new MyAdapter(ExamPageDrower.this, question, attempt);
                 gridView.setAdapter(adapter);
-                loadEnglish(1);
             }
 
             @Override
@@ -109,21 +122,17 @@ public class ExamPageDrower extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 if (num < question) {
-                    if (lan) {
-                        loadEnglish(num + 1);
-                        num++;
-                    } else {
-                        loadHindi(num + 1);
-                        num++;
-                    }
+                    loadEnglish(num + 1);
+                    num++;
                     if (r1.isChecked() || r2.isChecked() || r3.isChecked() || r4.isChecked()) {
                         attempt[num] = true;
                         r1.setChecked(false);
                         r2.setChecked(false);
                         r3.setChecked(false);
                         r4.setChecked(false);
-
                     }
+                } else {
+                    Toast.makeText(ExamPageDrower.this, "No More Questions.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -159,6 +168,43 @@ public class ExamPageDrower extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        getQuestionsList(test);
+    }
+
+    private void getQuestionsList(final String test) {
+        final DatabaseReference reference = database.getReference("papers/" + test + "/questions/");
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (int i = 1; dataSnapshot.child("q" + i).exists(); i++) {
+                        QuestionsObj temp = new QuestionsObj();
+                        temp.setQ(dataSnapshot.child("q" + i).child("q").getValue().toString());
+                        temp.setA(dataSnapshot.child("q" + i).child("ans").getValue().toString());
+                        temp.setO1(dataSnapshot.child("q" + i).child("o1").getValue().toString());
+                        temp.setO2(dataSnapshot.child("q" + i).child("o2").getValue().toString());
+                        temp.setO3(dataSnapshot.child("q" + i).child("o3").getValue().toString());
+                        temp.setO4(dataSnapshot.child("q" + i).child("o4").getValue().toString());
+
+                        Log.d("rkb", temp.getQ());
+                        Log.d("rkb", temp.getO1());
+                        Log.d("rkb", temp.getO2());
+                        Log.d("rkb", temp.getO3());
+                        Log.d("rkb", temp.getO4());
+                        Log.d("rkb", temp.getA());
+
+                        questionsObjs.add(temp);
+                    }
+                }
+                loadEnglish(1);
+                avi.hide();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -194,7 +240,7 @@ public class ExamPageDrower extends AppCompatActivity
     }
 
     private void back() {
-            super.onBackPressed();
+        super.onBackPressed();
     }
 
     @Override
@@ -240,54 +286,21 @@ public class ExamPageDrower extends AppCompatActivity
 
     void loadEnglish(final int questionNumber) {
         lan = true;
-        DatabaseReference myRef = database.getReference("papers/" + test + "/questions/q" + questionNumber);
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String ques1 = "Que." + dataSnapshot.child("q").getValue();
-                Log.d("aaa", ques1);
 
-                String o1 = dataSnapshot.child("o1").getValue().toString();
-                String o2 = dataSnapshot.child("o2").getValue().toString();
-                String o3 = dataSnapshot.child("o3").getValue().toString();
-                String o4 = dataSnapshot.child("o4").getValue().toString();
-                r1.setText(o1);
-                r2.setText(o2);
-                r3.setText(o3);
-                r4.setText(o4);
-                ques.setText(ques1);
-                attempt[questionNumber - 1] = true;
-                btnqdt.setText(questionNumber + "/" + question);
-            }
+        QuestionsObj questionsObj = questionsObjs.get(questionNumber-1);
+        String o1 = questionsObj.getO1();
+        String o2 = questionsObj.getO2();
+        String o3 = questionsObj.getO3();
+        String o4 = questionsObj.getO4();
+        String q = questionsObj.getQ();
+        r1.setText(o1);
+        r2.setText(o2);
+        r3.setText(o3);
+        r4.setText(o4);
+        ques.setText("Question : "+q);
+        attempt[questionNumber - 1] = true;
+        btnqdt.setText(questionNumber + "/" + question);
 
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.w("aaa", "Failed to read value.", error.toException());
-            }
-        });
-
-    }
-
-    void loadHindi(final int questionNumber) {
-        lan = false;
-        documentReference = db.collection("questions/questions/q" + questionNumber).document("hindi");
-        documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                String ques1 = "प्रशन - " + documentSnapshot.get("q").toString();
-                String o1 = documentSnapshot.get("o1").toString();
-                String o2 = documentSnapshot.get("o2").toString();
-                String o3 = documentSnapshot.get("o3").toString();
-                String o4 = documentSnapshot.get("o4").toString();
-                r1.setText(o1);
-                r2.setText(o2);
-                r3.setText(o3);
-                r4.setText(o4);
-                ques.setText(ques1);
-                btnqdt.setText(questionNumber + "/" + question);
-            }
-        });
     }
 
     @Override
