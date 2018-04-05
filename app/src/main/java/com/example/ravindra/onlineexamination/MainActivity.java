@@ -35,6 +35,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private FirebaseAuth mAuth;
@@ -211,11 +212,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             });
         }
         else if (id == R.id.HomeButtonTwo){
-            Intent intent = new Intent(this,ExaminationList.class);
+            Intent intent = new Intent(this,ExamPageDrower.class);
             startActivity(intent);
         }
         else if(id == R.id.HomeButtonThree){
             Toast.makeText(this, "Third Button", Toast.LENGTH_SHORT).show();
+            Random random = new Random();
+            Log.d("rkb", String.valueOf(random.nextInt(5)));
 
         }
         else if (id == R.id.HomeButtonFour){

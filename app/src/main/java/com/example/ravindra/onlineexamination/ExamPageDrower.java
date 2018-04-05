@@ -3,6 +3,7 @@ package com.example.ravindra.onlineexamination;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -28,14 +29,12 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.wang.avi.AVLoadingIndicatorView;
 
@@ -60,6 +59,7 @@ public class ExamPageDrower extends AppCompatActivity
     FirebaseDatabase database;
     DrawerLayout drawer;
     ArrayList<QuestionsObj> questionsObjs;
+    ArrayList<QuestionStudentResponse> questionStudentResponses;
     AVLoadingIndicatorView avi;
 
 
@@ -73,6 +73,7 @@ public class ExamPageDrower extends AppCompatActivity
         avi = findViewById(R.id.avi);
         avi.show();
         questionsObjs = new ArrayList<>();
+        questionStudentResponses = new ArrayList<>();
         new CountDownTimer(3600000, 1000) {
 
             public void onTick(long millisUntilFinished) {
@@ -89,7 +90,7 @@ public class ExamPageDrower extends AppCompatActivity
                 time.setText("done!");
             }
         }.start();
-        test = getIntent().getStringExtra("exam");
+        test = "tot_questions";
         database = MainActivity.databaseObject();
         saveAndNext = findViewById(R.id.saveandNext);
         btnqdt = findViewById(R.id.button4);
@@ -102,13 +103,13 @@ public class ExamPageDrower extends AppCompatActivity
         r4 = findViewById(R.id.ansRadio4);
         gridView = findViewById(R.id.questionsItem);
         db = FirebaseFirestore.getInstance();
-        DatabaseReference myRef = database.getReference("papers/test1/tot_q");
+        DatabaseReference myRef = database.getReference("maximum_questions");
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 question = Integer.parseInt(dataSnapshot.getValue().toString());
                 attempt = new boolean[question];
-                MyAdapter adapter = new MyAdapter(ExamPageDrower.this, question, attempt);
+                MyAdapter adapter = new MyAdapter(ExamPageDrower.this, question,questionStudentResponses,attempt);
                 gridView.setAdapter(adapter);
             }
 
@@ -122,15 +123,37 @@ public class ExamPageDrower extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 if (num < question) {
+                    if (r1.isChecked() || r2.isChecked() || r3.isChecked() || r4.isChecked()) {
+                        QuestionStudentResponse temp = new QuestionStudentResponse();
+                        if (r1.isChecked()){
+                          temp.setAttempt(true);
+                          temp.setUserAns("1");
+                          temp.setRealAns(questionsObjs.get(num).getAns());
+                            r1.setChecked(false);
+                        }
+                        else  if (r2.isChecked()){
+                            temp.setAttempt(true);
+                            temp.setUserAns("2");
+                            temp.setRealAns(questionsObjs.get(num).getAns());
+                            r2.setChecked(false);
+                        }
+                        else if (r3.isChecked()){
+                            temp.setAttempt(true);
+                            temp.setUserAns("3");
+                            temp.setRealAns(questionsObjs.get(num).getAns());
+                            r3.setChecked(false);
+                        }
+                        if (r4.isChecked()){
+                            temp.setAttempt(true);
+                            temp.setUserAns("4");
+                            temp.setRealAns(questionsObjs.get(num).getAns());
+                            r4.setChecked(false);
+                        }
+                        attempt[num] = true;
+                        questionStudentResponses.add(temp);
+                    }
                     loadEnglish(num + 1);
                     num++;
-                    if (r1.isChecked() || r2.isChecked() || r3.isChecked() || r4.isChecked()) {
-                        attempt[num] = true;
-                        r1.setChecked(false);
-                        r2.setChecked(false);
-                        r3.setChecked(false);
-                        r4.setChecked(false);
-                    }
                 } else {
                     Toast.makeText(ExamPageDrower.this, "No More Questions.", Toast.LENGTH_SHORT).show();
                 }
@@ -149,9 +172,8 @@ public class ExamPageDrower extends AppCompatActivity
 
             @Override
             public void onDrawerOpened(@NonNull View drawerView) {
-                MyAdapter myAdapter = new MyAdapter(ExamPageDrower.this, question, attempt);
+                MyAdapter myAdapter = new MyAdapter(ExamPageDrower.this, question, questionStudentResponses, attempt);
                 gridView.setAdapter(myAdapter);
-                Toast.makeText(ExamPageDrower.this, "drawerOpened", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -172,27 +194,19 @@ public class ExamPageDrower extends AppCompatActivity
     }
 
     private void getQuestionsList(final String test) {
-        final DatabaseReference reference = database.getReference("papers/" + test + "/questions/");
+        final DatabaseReference reference = database.getReference(test);
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     for (int i = 1; dataSnapshot.child("q" + i).exists(); i++) {
                         QuestionsObj temp = new QuestionsObj();
-                        temp.setQ(dataSnapshot.child("q" + i).child("q").getValue().toString());
-                        temp.setA(dataSnapshot.child("q" + i).child("ans").getValue().toString());
-                        temp.setO1(dataSnapshot.child("q" + i).child("o1").getValue().toString());
-                        temp.setO2(dataSnapshot.child("q" + i).child("o2").getValue().toString());
-                        temp.setO3(dataSnapshot.child("q" + i).child("o3").getValue().toString());
-                        temp.setO4(dataSnapshot.child("q" + i).child("o4").getValue().toString());
-
-                        Log.d("rkb", temp.getQ());
-                        Log.d("rkb", temp.getO1());
-                        Log.d("rkb", temp.getO2());
-                        Log.d("rkb", temp.getO3());
-                        Log.d("rkb", temp.getO4());
-                        Log.d("rkb", temp.getA());
-
+                        temp.setQ(dataSnapshot.child("q" + i).child("ques").getValue().toString());
+                        temp.setA(dataSnapshot.child("q" + i).child("1").getValue().toString());
+                        temp.setB(dataSnapshot.child("q" + i).child("2").getValue().toString());
+                        temp.setC(dataSnapshot.child("q" + i).child("3").getValue().toString());
+                        temp.setD(dataSnapshot.child("q" + i).child("4").getValue().toString());
+                        temp.setAns(dataSnapshot.child("q" + i).child("ans").getValue().toString());
                         questionsObjs.add(temp);
                     }
                 }
@@ -260,6 +274,9 @@ public class ExamPageDrower extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.finish) {
             Toast.makeText(this, "Finish", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this,Result.class);
+            intent.putExtra("questionList",questionStudentResponses);
+            startActivity(intent);
             return true;
         }
 
@@ -288,10 +305,10 @@ public class ExamPageDrower extends AppCompatActivity
         lan = true;
 
         QuestionsObj questionsObj = questionsObjs.get(questionNumber-1);
-        String o1 = questionsObj.getO1();
-        String o2 = questionsObj.getO2();
-        String o3 = questionsObj.getO3();
-        String o4 = questionsObj.getO4();
+        String o1 = questionsObj.getA();
+        String o2 = questionsObj.getB();
+        String o3 = questionsObj.getC();
+        String o4 = questionsObj.getD();
         String q = questionsObj.getQ();
         r1.setText(o1);
         r2.setText(o2);
@@ -313,12 +330,14 @@ public class ExamPageDrower extends AppCompatActivity
         int question;
         Context context;
         boolean attempt[];
+        ArrayList<QuestionStudentResponse> questionStudentResponses;
 
 
-        public MyAdapter(Context context, int question, boolean[] attempt) {
+        public MyAdapter(Context context, int question, ArrayList<QuestionStudentResponse> questionStudentResponses, boolean[] attempt) {
             this.context = context;
             layoutInflater = LayoutInflater.from(context);
             this.question = question;
+            this.questionStudentResponses = questionStudentResponses;
             this.attempt = attempt;
         }
 

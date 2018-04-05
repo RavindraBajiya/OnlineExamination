@@ -1,20 +1,22 @@
 package com.example.ravindra.onlineexamination;
 
-public class QuestionsObj {
+import java.io.Serializable;
+
+public class QuestionsObj implements Serializable{
     String q;
     String a;
-    String o1;
-    String o2;
-    String o3;
-    String o4;
+    String b;
+    String c;
+    String d;
+    String ans;
 
-    public QuestionsObj(String q, String a, String o1, String o2, String o3, String o4) {
+    public QuestionsObj(String q, String a, String b, String c, String d, String ans) {
         this.q = q;
         this.a = a;
-        this.o1 = o1;
-        this.o2 = o2;
-        this.o3 = o3;
-        this.o4 = o4;
+        this.b = b;
+        this.c = c;
+        this.d = d;
+        this.ans = ans;
     }
 
     public QuestionsObj() {
@@ -36,35 +38,35 @@ public class QuestionsObj {
         this.a = a;
     }
 
-    public String getO1() {
-        return o1;
+    public String getB() {
+        return b;
     }
 
-    public void setO1(String o1) {
-        this.o1 = o1;
+    public void setB(String b) {
+        this.b = b;
     }
 
-    public String getO2() {
-        return o2;
+    public String getC() {
+        return c;
     }
 
-    public void setO2(String o2) {
-        this.o2 = o2;
+    public void setC(String c) {
+        this.c = c;
     }
 
-    public String getO3() {
-        return o3;
+    public String getD() {
+        return d;
     }
 
-    public void setO3(String o3) {
-        this.o3 = o3;
+    public void setD(String d) {
+        this.d = d;
     }
 
-    public String getO4() {
-        return o4;
+    public String getAns() {
+        return ans;
     }
 
-    public void setO4(String o4) {
-        this.o4 = o4;
+    public void setAns(String ans) {
+        this.ans = ans;
     }
 }

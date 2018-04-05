@@ -63,7 +63,8 @@
         <activity android:name=".galleryimages.PhotosActivity" />
         <activity android:name=".galleryimages.PhotoShow" />
         <activity android:name=".galleryimages.UploadImage" />
-        <activity android:name=".ExaminationList"></activity>
+        <activity android:name=".ExaminationList" />
+        <activity android:name=".Result"></activity>
     </application>
 
 </manifest>
