@@ -101,6 +101,10 @@ public class ExamPageDrower extends AppCompatActivity
         r2 = findViewById(R.id.ansRadio2);
         r3 = findViewById(R.id.ansRadio3);
         r4 = findViewById(R.id.ansRadio4);
+        r1.setOnClickListener(this);
+        r2.setOnClickListener(this);
+        r3.setOnClickListener(this);
+        r4.setOnClickListener(this);
         gridView = findViewById(R.id.questionsItem);
         db = FirebaseFirestore.getInstance();
         DatabaseReference myRef = database.getReference("maximum_questions");
@@ -124,33 +128,11 @@ public class ExamPageDrower extends AppCompatActivity
             public void onClick(View v) {
                 if (num < question) {
                     if (r1.isChecked() || r2.isChecked() || r3.isChecked() || r4.isChecked()) {
-                        QuestionStudentResponse temp = new QuestionStudentResponse();
-                        if (r1.isChecked()){
-                          temp.setAttempt(true);
-                          temp.setUserAns("1");
-                          temp.setRealAns(questionsObjs.get(num).getAns());
                             r1.setChecked(false);
-                        }
-                        else  if (r2.isChecked()){
-                            temp.setAttempt(true);
-                            temp.setUserAns("2");
-                            temp.setRealAns(questionsObjs.get(num).getAns());
                             r2.setChecked(false);
-                        }
-                        else if (r3.isChecked()){
-                            temp.setAttempt(true);
-                            temp.setUserAns("3");
-                            temp.setRealAns(questionsObjs.get(num).getAns());
                             r3.setChecked(false);
-                        }
-                        if (r4.isChecked()){
-                            temp.setAttempt(true);
-                            temp.setUserAns("4");
-                            temp.setRealAns(questionsObjs.get(num).getAns());
                             r4.setChecked(false);
-                        }
                         attempt[num] = true;
-                        questionStudentResponses.add(temp);
                     }
                     loadEnglish(num + 1);
                     num++;
@@ -210,7 +192,7 @@ public class ExamPageDrower extends AppCompatActivity
                         questionsObjs.add(temp);
                     }
                 }
-                loadEnglish(1);
+                loadEnglish(num);
                 avi.hide();
             }
 
@@ -297,7 +279,34 @@ public class ExamPageDrower extends AppCompatActivity
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        Toast.makeText(this, "No More Questions.", Toast.LENGTH_SHORT).show();
+        QuestionStudentResponse temp = new QuestionStudentResponse();
+        switch (id) {
+            case R.id.ansRadio1:
+                temp.setAttempt(true);
+                temp.setUserAns(questionsObjs.get(num-1).getA());
+                temp.setRealAns(questionsObjs.get(num-1).getAns());
+                break;
+            case R.id.ansRadio2:
+                temp.setAttempt(true);
+                temp.setUserAns(questionsObjs.get(num-1).getB());
+                temp.setRealAns(questionsObjs.get(num-1).getAns());
+                break;
+            case R.id.ansRadio3:
+                temp.setAttempt(true);
+                temp.setUserAns(questionsObjs.get(num-1).getC());
+                temp.setRealAns(questionsObjs.get(num-1).getAns());
+                break;
+            case R.id.ansRadio4:
+                temp.setAttempt(true);
+                temp.setUserAns(questionsObjs.get(num-1).getD());
+                temp.setRealAns(questionsObjs.get(num-1).getAns());
+                break;
+        }
+        if (temp.getRealAns().equals(temp.getUserAns())) {
+            Toast.makeText(this, "correct", Toast.LENGTH_SHORT).show();
+        } else
+            Toast.makeText(this, "Wrong!   " + temp.getRealAns(), Toast.LENGTH_SHORT).show();
+
     }
 
 
