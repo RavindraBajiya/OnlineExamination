@@ -98,6 +98,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             getMenuItems(i);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        getMenu();
+    }
+
     private void getMenuItems(final int i) {
         DatabaseReference myRef = database.getReference("menu_list/" + i);
         myRef.addValueEventListener(new ValueEventListener() {
