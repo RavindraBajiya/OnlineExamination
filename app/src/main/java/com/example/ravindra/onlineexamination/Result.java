@@ -13,7 +13,7 @@ public class Result extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ListView listView = findViewById(R.id.list);
+        ListView listView = findViewById(R.id.resultList);
         setContentView(R.layout.activity_result);
         ArrayList<QuestionStudentResponse> questionStudentResponses = getIntent().getParcelableArrayListExtra("questionList");
         String []array = new String[questionStudentResponses.size()];
@@ -22,7 +22,7 @@ public class Result extends AppCompatActivity {
             array[i] = temp.getRealAns();
             Log.d("resultdude",array[i]);
         }
-       ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,array);
-               listView.setAdapter(adapter);
+     ResultAdapter resultAdapter = new ResultAdapter(this,questionStudentResponses);
+        listView.setAdapter(resultAdapter);
     }
 }
