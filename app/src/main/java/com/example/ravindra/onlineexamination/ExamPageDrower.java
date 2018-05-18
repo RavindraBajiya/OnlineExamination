@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
@@ -113,7 +114,7 @@ public class ExamPageDrower extends AppCompatActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
                 question = Integer.parseInt(dataSnapshot.getValue().toString());
                 attempt = new boolean[question];
-                MyAdapter adapter = new MyAdapter(ExamPageDrower.this, question,questionStudentResponses,attempt);
+                MyAdapter adapter = new MyAdapter(ExamPageDrower.this, question, questionStudentResponses, attempt);
                 gridView.setAdapter(adapter);
             }
 
@@ -127,13 +128,36 @@ public class ExamPageDrower extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 if (num < question) {
-                    if (r1.isChecked() || r2.isChecked() || r3.isChecked() || r4.isChecked()) {
-                            r1.setChecked(false);
-                            r2.setChecked(false);
-                            r3.setChecked(false);
-                            r4.setChecked(false);
+                   /* if (r1.isChecked() || r2.isChecked() || r3.isChecked() || r4.isChecked()) {
+                        QuestionStudentResponse temp = new QuestionStudentResponse();
+                        if (r1.isChecked()) {
+                            temp.setAttempt(true);
+                            temp.setUserAns("1");
+                            temp.setRealAns(questionsObjs.get(num).getAns());
+                        } else if (r2.isChecked()) {
+                            temp.setAttempt(true);
+                            temp.setUserAns("2");
+                            temp.setRealAns(questionsObjs.get(num).getAns());
+
+                        } else if (r3.isChecked()) {
+                            temp.setAttempt(true);
+                            temp.setUserAns("3");
+                            temp.setRealAns(questionsObjs.get(num).getAns());
+
+                        }
+                        if (r4.isChecked()) {
+                            temp.setAttempt(true);
+                            temp.setUserAns("4");
+                            temp.setRealAns(questionsObjs.get(num).getAns());
+                        }
                         attempt[num] = true;
-                    }
+                        questionStudentResponses.add(temp);
+                        Log.d("questions",questionStudentResponses.get(0).getRealAns()+" "+questionStudentResponses.get(0).getUserAns()+" "+questionStudentResponses.get(0).isAttempt());
+                    }*/
+                    r1.setChecked(false);
+                    r2.setChecked(false);
+                    r3.setChecked(false);
+                    r4.setChecked(false);
                     loadEnglish(num + 1);
                     num++;
                 } else {
@@ -192,7 +216,7 @@ public class ExamPageDrower extends AppCompatActivity
                         questionsObjs.add(temp);
                     }
                 }
-                loadEnglish(num);
+                loadEnglish(1);
                 avi.hide();
             }
 
@@ -256,9 +280,10 @@ public class ExamPageDrower extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.finish) {
             Toast.makeText(this, "Finish", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(this,Result.class);
-            intent.putExtra("questionList",questionStudentResponses);
+            Intent intent = new Intent(this, Result.class);
+            intent.putParcelableArrayListExtra("questionList", (ArrayList<? extends Parcelable>) questionStudentResponses);
             startActivity(intent);
+            finish();
             return true;
         }
 
@@ -279,41 +304,57 @@ public class ExamPageDrower extends AppCompatActivity
     @Override
     public void onClick(View v) {
         int id = v.getId();
+        String ans = questionsObjs.get(num-1).getAns();
         QuestionStudentResponse temp = new QuestionStudentResponse();
-        switch (id) {
-            case R.id.ansRadio1:
-                temp.setAttempt(true);
-                temp.setUserAns(questionsObjs.get(num-1).getA());
-                temp.setRealAns(questionsObjs.get(num-1).getAns());
-                break;
-            case R.id.ansRadio2:
-                temp.setAttempt(true);
-                temp.setUserAns(questionsObjs.get(num-1).getB());
-                temp.setRealAns(questionsObjs.get(num-1).getAns());
-                break;
-            case R.id.ansRadio3:
-                temp.setAttempt(true);
-                temp.setUserAns(questionsObjs.get(num-1).getC());
-                temp.setRealAns(questionsObjs.get(num-1).getAns());
-                break;
-            case R.id.ansRadio4:
-                temp.setAttempt(true);
-                temp.setUserAns(questionsObjs.get(num-1).getD());
-                temp.setRealAns(questionsObjs.get(num-1).getAns());
-                break;
-        }
-        if (temp.getRealAns().equals(temp.getUserAns())) {
-            Toast.makeText(this, "correct", Toast.LENGTH_SHORT).show();
-        } else
-            Toast.makeText(this, "Wrong!   " + temp.getRealAns(), Toast.LENGTH_SHORT).show();
+          if (id == r1.getId()) {
+            temp.setAttempt(true);
+            temp.setUserAns("1");
+            temp.setRealAns(questionsObjs.get(num-1).getAns());
+            if (ans.equals(questionsObjs.get(num-1).getA())){
+                Toast.makeText(this, "true", Toast.LENGTH_SHORT).show();
+            }
+            else
+                Toast.makeText(this, "false ...Real answer is "+ans, Toast.LENGTH_SHORT).show();
+        } else if (id == r2.getId()) {
+              temp.setAttempt(true);
+              temp.setUserAns("2");
+              temp.setRealAns(questionsObjs.get(num-1).getAns());
+            if (ans.equals(questionsObjs.get(num-1).getB())){
+                Toast.makeText(this, "true", Toast.LENGTH_SHORT).show();
+            }
+            else
+                Toast.makeText(this, "false ...Real answer is "+ans, Toast.LENGTH_SHORT).show();
+        } else if (id == r3.getId()) {
+              temp.setAttempt(true);
+              temp.setUserAns("3");
+              temp.setRealAns(questionsObjs.get(num-1).getAns());
+            if (ans.equals(questionsObjs.get(num-1).getC())){
+                Toast.makeText(this, "true", Toast.LENGTH_SHORT).show();
+            }
+            else
+                Toast.makeText(this, "false ...Real answer is "+ans, Toast.LENGTH_SHORT).show();
 
+        } else if (id == r4.getId()) {
+              temp.setAttempt(true);
+              temp.setUserAns("4");
+              temp.setRealAns(questionsObjs.get(num-1).getAns());
+            if (ans.equals(questionsObjs.get(num-1).getD())){
+                Toast.makeText(this, "true", Toast.LENGTH_SHORT).show();
+            }
+            else
+                Toast.makeText(this, "false ...Real answer is "+ans, Toast.LENGTH_SHORT).show();
+        } else
+            Toast.makeText(this, "No More Questions.", Toast.LENGTH_SHORT).show();
+
+        attempt[num-1] = true;
+        questionStudentResponses.add(temp);
+        Log.d("questions",questionStudentResponses.get(num-1).getRealAns()+" "+questionStudentResponses.get(num-1).getUserAns()+" "+questionStudentResponses.get(num-1).isAttempt());
     }
 
 
     void loadEnglish(final int questionNumber) {
         lan = true;
-
-        QuestionsObj questionsObj = questionsObjs.get(questionNumber-1);
+        QuestionsObj questionsObj = questionsObjs.get(questionNumber - 1);
         String o1 = questionsObj.getA();
         String o2 = questionsObj.getB();
         String o3 = questionsObj.getC();
@@ -323,7 +364,7 @@ public class ExamPageDrower extends AppCompatActivity
         r2.setText(o2);
         r3.setText(o3);
         r4.setText(o4);
-        ques.setText("Question : "+q);
+        ques.setText("Question : " + q);
         attempt[questionNumber - 1] = true;
         btnqdt.setText(questionNumber + "/" + question);
 

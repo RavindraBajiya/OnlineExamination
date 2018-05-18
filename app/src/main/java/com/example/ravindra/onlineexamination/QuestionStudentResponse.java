@@ -1,8 +1,11 @@
 package com.example.ravindra.onlineexamination;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 
-public class QuestionStudentResponse implements Serializable {
+public class QuestionStudentResponse implements Parcelable{
     String userAns;
     String realAns;
     boolean attempt;
@@ -14,6 +17,11 @@ public class QuestionStudentResponse implements Serializable {
     }
 
     public QuestionStudentResponse() {
+    }
+
+    public QuestionStudentResponse(Parcel in) {
+        this.userAns = in.readString();
+        this.realAns = in.readString();
     }
 
     public String getUserAns() {
@@ -39,4 +47,24 @@ public class QuestionStudentResponse implements Serializable {
     public void setAttempt(boolean attempt) {
         this.attempt = attempt;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(userAns);
+        dest.writeString(realAns);
+    }
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public QuestionStudentResponse createFromParcel(Parcel in) {
+            return new QuestionStudentResponse(in);
+        }
+
+        public QuestionStudentResponse[] newArray(int size) {
+            return new QuestionStudentResponse[size];
+        }
+    };
 }
