@@ -14,15 +14,12 @@ import java.util.ArrayList;
 public class ResultAdapter extends BaseAdapter {
     ArrayList<QuestionStudentResponse> list;
     Context context;
-    LayoutInflater layoutInflater;
+//    LayoutInflater layoutInflater;
 
 
     public ResultAdapter(Context context, ArrayList<QuestionStudentResponse> questionStudentResponses) {
         this.context = context;
         list = questionStudentResponses;
-    }
-
-    public ResultAdapter() {
     }
 
     @Override
@@ -42,10 +39,20 @@ public class ResultAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
-        convertView = layoutInflater.inflate(R.layout.result_row, null);
+        LayoutInflater inflater = (LayoutInflater)context.getSystemService
+                (Context.LAYOUT_INFLATER_SERVICE);
+        convertView = inflater.inflate(R.layout.result_row, null);
         TextView ua = convertView.findViewById(R.id.userAnswer);
         TextView ca = convertView.findViewById(R.id.correctAnswer);
+        if (list.get(position).getRealAns().equals(list.get(position).getUserAns())){
+            convertView.setBackgroundColor(context.getColor(R.color.correctAns));
+        }
+        else if (list.get(position).getUserAns().equals("UnAttempt")){
+            convertView.setBackgroundColor(context.getColor(R.color.notVisited));
+        }
+        else {
+            convertView.setBackgroundColor(context.getColor(R.color.wrongAns));
+        }
         ua.setText(list.get(position).getUserAns());
         ca.setText(list.get(position).getRealAns());
         return convertView;

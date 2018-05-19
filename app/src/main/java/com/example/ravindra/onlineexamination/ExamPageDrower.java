@@ -27,6 +27,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -114,6 +115,11 @@ public class ExamPageDrower extends AppCompatActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
                 question = Integer.parseInt(dataSnapshot.getValue().toString());
                 attempt = new boolean[question];
+                for (int i=0;i<question;i++){
+                    QuestionStudentResponse temp = new QuestionStudentResponse();
+                    temp.setUserAns("UnAttempt");
+                    questionStudentResponses.add(temp);
+                }
                 MyAdapter adapter = new MyAdapter(ExamPageDrower.this, question, questionStudentResponses, attempt);
                 gridView.setAdapter(adapter);
             }
@@ -128,36 +134,8 @@ public class ExamPageDrower extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 if (num < question) {
-                   /* if (r1.isChecked() || r2.isChecked() || r3.isChecked() || r4.isChecked()) {
-                        QuestionStudentResponse temp = new QuestionStudentResponse();
-                        if (r1.isChecked()) {
-                            temp.setAttempt(true);
-                            temp.setUserAns("1");
-                            temp.setRealAns(questionsObjs.get(num).getAns());
-                        } else if (r2.isChecked()) {
-                            temp.setAttempt(true);
-                            temp.setUserAns("2");
-                            temp.setRealAns(questionsObjs.get(num).getAns());
-
-                        } else if (r3.isChecked()) {
-                            temp.setAttempt(true);
-                            temp.setUserAns("3");
-                            temp.setRealAns(questionsObjs.get(num).getAns());
-
-                        }
-                        if (r4.isChecked()) {
-                            temp.setAttempt(true);
-                            temp.setUserAns("4");
-                            temp.setRealAns(questionsObjs.get(num).getAns());
-                        }
-                        attempt[num] = true;
-                        questionStudentResponses.add(temp);
-                        Log.d("questions",questionStudentResponses.get(0).getRealAns()+" "+questionStudentResponses.get(0).getUserAns()+" "+questionStudentResponses.get(0).isAttempt());
-                    }*/
-                    r1.setChecked(false);
-                    r2.setChecked(false);
-                    r3.setChecked(false);
-                    r4.setChecked(false);
+                    RadioGroup radioGroup=findViewById(R.id.radiogroup);
+                    radioGroup.clearCheck();
                     loadEnglish(num + 1);
                     num++;
                 } else {
@@ -308,7 +286,7 @@ public class ExamPageDrower extends AppCompatActivity
         QuestionStudentResponse temp = new QuestionStudentResponse();
           if (id == r1.getId()) {
             temp.setAttempt(true);
-            temp.setUserAns("1");
+            temp.setUserAns(questionsObjs.get(num-1).getA());
             temp.setRealAns(questionsObjs.get(num-1).getAns());
             if (ans.equals(questionsObjs.get(num-1).getA())){
                 Toast.makeText(this, "true", Toast.LENGTH_SHORT).show();
@@ -317,7 +295,7 @@ public class ExamPageDrower extends AppCompatActivity
                 Toast.makeText(this, "false ...Real answer is "+ans, Toast.LENGTH_SHORT).show();
         } else if (id == r2.getId()) {
               temp.setAttempt(true);
-              temp.setUserAns("2");
+              temp.setUserAns(questionsObjs.get(num-1).getB());
               temp.setRealAns(questionsObjs.get(num-1).getAns());
             if (ans.equals(questionsObjs.get(num-1).getB())){
                 Toast.makeText(this, "true", Toast.LENGTH_SHORT).show();
@@ -326,17 +304,17 @@ public class ExamPageDrower extends AppCompatActivity
                 Toast.makeText(this, "false ...Real answer is "+ans, Toast.LENGTH_SHORT).show();
         } else if (id == r3.getId()) {
               temp.setAttempt(true);
-              temp.setUserAns("3");
+              temp.setUserAns(questionsObjs.get(num-1).getC());
               temp.setRealAns(questionsObjs.get(num-1).getAns());
             if (ans.equals(questionsObjs.get(num-1).getC())){
                 Toast.makeText(this, "true", Toast.LENGTH_SHORT).show();
             }
-            else
+            else{}
                 Toast.makeText(this, "false ...Real answer is "+ans, Toast.LENGTH_SHORT).show();
 
         } else if (id == r4.getId()) {
               temp.setAttempt(true);
-              temp.setUserAns("4");
+              temp.setUserAns(questionsObjs.get(num-1).getD());
               temp.setRealAns(questionsObjs.get(num-1).getAns());
             if (ans.equals(questionsObjs.get(num-1).getD())){
                 Toast.makeText(this, "true", Toast.LENGTH_SHORT).show();
@@ -348,7 +326,7 @@ public class ExamPageDrower extends AppCompatActivity
 
         attempt[num-1] = true;
         questionStudentResponses.add(temp);
-        Log.d("questions",questionStudentResponses.get(num-1).getRealAns()+" "+questionStudentResponses.get(num-1).getUserAns()+" "+questionStudentResponses.get(num-1).isAttempt());
+//        Log.d("questions",questionStudentResponses.get(num-1).getRealAns()+" "+questionStudentResponses.get(num-1).getUserAns()+" "+questionStudentResponses.get(num-1).isAttempt());
     }
 
 
@@ -422,6 +400,8 @@ public class ExamPageDrower extends AppCompatActivity
                 public void onClick(View v) {
                     Toast.makeText(ExamPageDrower.this, "click " + (position + 1), Toast.LENGTH_SHORT).show();
                     loadEnglish(position + 1);
+                    RadioGroup radioGroup = findViewById(R.id.radiogroup);
+                    radioGroup.clearCheck();
                     v.setBackground(getDrawable(R.drawable.visitedbtn));
                     num = position + 1;
                     drawer = findViewById(R.id.drawer_layout);

@@ -11,5 +11,7 @@
     <color name="notVisited">#d7d9db</color>
     <color name="backgroundColor">#ff8b68</color>
     <color name="ansColor">#979797</color>
+    <color name="correctAns">#c5d62a</color>
+    <color name="wrongAns">#ff0000</color>
 
 </resources>
