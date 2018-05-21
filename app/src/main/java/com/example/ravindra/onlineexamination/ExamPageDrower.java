@@ -115,11 +115,6 @@ public class ExamPageDrower extends AppCompatActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
                 question = Integer.parseInt(dataSnapshot.getValue().toString());
                 attempt = new boolean[question];
-                for (int i=0;i<question;i++){
-                    QuestionStudentResponse temp = new QuestionStudentResponse();
-                    temp.setUserAns("UnAttempt");
-                    questionStudentResponses.add(temp);
-                }
                 MyAdapter adapter = new MyAdapter(ExamPageDrower.this, question, questionStudentResponses, attempt);
                 gridView.setAdapter(adapter);
             }
@@ -260,6 +255,7 @@ public class ExamPageDrower extends AppCompatActivity
             Toast.makeText(this, "Finish", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(this, Result.class);
             intent.putParcelableArrayListExtra("questionList", (ArrayList<? extends Parcelable>) questionStudentResponses);
+            intent.putParcelableArrayListExtra("totQues", (ArrayList<? extends Parcelable>) questionsObjs);
             startActivity(intent);
             finish();
             return true;
@@ -325,7 +321,7 @@ public class ExamPageDrower extends AppCompatActivity
             Toast.makeText(this, "No More Questions.", Toast.LENGTH_SHORT).show();
 
         attempt[num-1] = true;
-        questionStudentResponses.add(temp);
+        questionStudentResponses.add(num-1,temp);
 //        Log.d("questions",questionStudentResponses.get(num-1).getRealAns()+" "+questionStudentResponses.get(num-1).getUserAns()+" "+questionStudentResponses.get(num-1).isAttempt());
     }
 

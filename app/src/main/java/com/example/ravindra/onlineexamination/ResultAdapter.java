@@ -47,9 +47,6 @@ public class ResultAdapter extends BaseAdapter {
         if (list.get(position).getRealAns().equals(list.get(position).getUserAns())){
             convertView.setBackgroundColor(context.getColor(R.color.correctAns));
         }
-        else if (list.get(position).getUserAns().equals("UnAttempt")){
-            convertView.setBackgroundColor(context.getColor(R.color.notVisited));
-        }
         else {
             convertView.setBackgroundColor(context.getColor(R.color.wrongAns));
         }
