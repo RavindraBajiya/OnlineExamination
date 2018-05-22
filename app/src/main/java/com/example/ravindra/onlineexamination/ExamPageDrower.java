@@ -256,6 +256,7 @@ public class ExamPageDrower extends AppCompatActivity
             Intent intent = new Intent(this, Result.class);
             intent.putParcelableArrayListExtra("questionList", (ArrayList<? extends Parcelable>) questionStudentResponses);
             intent.putParcelableArrayListExtra("totQues", (ArrayList<? extends Parcelable>) questionsObjs);
+            intent.putExtra("question",question);
             startActivity(intent);
             finish();
             return true;
