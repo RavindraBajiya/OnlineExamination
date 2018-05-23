@@ -50,6 +50,8 @@ public class ExamPageDrower extends AppCompatActivity
     TextView time;
     RadioButton r1, r2, r3, r4;
     int question;
+    int positive;
+    int negative;
     Button saveAndNext;
     Boolean lan;
     DocumentReference documentReference;
@@ -109,7 +111,8 @@ public class ExamPageDrower extends AppCompatActivity
         r4.setOnClickListener(this);
         gridView = findViewById(R.id.questionsItem);
         db = FirebaseFirestore.getInstance();
-        DatabaseReference myRef = database.getReference("maximum_questions");
+        DatabaseReference myRef1 = database.getReference("exam_schedule");
+        DatabaseReference myRef = myRef1.child("maximum_question");
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -123,6 +126,32 @@ public class ExamPageDrower extends AppCompatActivity
             public void onCancelled(DatabaseError error) {
                 // Failed to read value
                 Log.w("aaa", "Failed to read value.", error.toException());
+            }
+        });
+        DatabaseReference databaseReference = database.getReference("exam_schedule").child("positive_marking");
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                positive = Integer.parseInt(dataSnapshot.getValue().toString());
+                maximumMarks.setText(positive+"");
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(ExamPageDrower.this, "Database Error..Try again", Toast.LENGTH_SHORT).show();
+            }
+        });
+        databaseReference = database.getReference("exam_schedule").child("negative_marking");
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                negative = Integer.parseInt(dataSnapshot.getValue().toString());
+                minusMarking.setText(negative+"");
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(ExamPageDrower.this, "Database Error..Try again", Toast.LENGTH_SHORT).show();
             }
         });
         saveAndNext.setOnClickListener(new View.OnClickListener() {
@@ -257,6 +286,8 @@ public class ExamPageDrower extends AppCompatActivity
             intent.putParcelableArrayListExtra("questionList", (ArrayList<? extends Parcelable>) questionStudentResponses);
             intent.putParcelableArrayListExtra("totQues", (ArrayList<? extends Parcelable>) questionsObjs);
             intent.putExtra("question",question);
+            intent.putExtra("positive",positive);
+            intent.putExtra("negative",negative);
             startActivity(intent);
             finish();
             return true;
@@ -270,7 +301,6 @@ public class ExamPageDrower extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        Toast.makeText(this, "fjalkfj", Toast.LENGTH_SHORT).show();
         drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -283,42 +313,42 @@ public class ExamPageDrower extends AppCompatActivity
         QuestionStudentResponse temp = new QuestionStudentResponse();
           if (id == r1.getId()) {
             temp.setAttempt(true);
-            temp.setUserAns(questionsObjs.get(num-1).getA());
-            temp.setRealAns(questionsObjs.get(num-1).getAns());
-            if (ans.equals(questionsObjs.get(num-1).getA())){
+            temp.setUserAns(questionsObjs.get(num-1).getA().trim());
+            temp.setRealAns(questionsObjs.get(num-1).getAns().trim());
+           /* if (ans.equals(questionsObjs.get(num-1).getA())){
                 Toast.makeText(this, "true", Toast.LENGTH_SHORT).show();
             }
             else
-                Toast.makeText(this, "false ...Real answer is "+ans, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "false ...Real answer is "+ans, Toast.LENGTH_SHORT).show();*/
         } else if (id == r2.getId()) {
               temp.setAttempt(true);
-              temp.setUserAns(questionsObjs.get(num-1).getB());
-              temp.setRealAns(questionsObjs.get(num-1).getAns());
-            if (ans.equals(questionsObjs.get(num-1).getB())){
+              temp.setUserAns(questionsObjs.get(num-1).getB().trim());
+              temp.setRealAns(questionsObjs.get(num-1).getAns().trim());
+           /* if (ans.equals(questionsObjs.get(num-1).getB())){
                 Toast.makeText(this, "true", Toast.LENGTH_SHORT).show();
             }
             else
                 Toast.makeText(this, "false ...Real answer is "+ans, Toast.LENGTH_SHORT).show();
-        } else if (id == r3.getId()) {
+*/        } else if (id == r3.getId()) {
               temp.setAttempt(true);
-              temp.setUserAns(questionsObjs.get(num-1).getC());
-              temp.setRealAns(questionsObjs.get(num-1).getAns());
-            if (ans.equals(questionsObjs.get(num-1).getC())){
+              temp.setUserAns(questionsObjs.get(num-1).getC().trim());
+              temp.setRealAns(questionsObjs.get(num-1).getAns().trim());
+           /* if (ans.equals(questionsObjs.get(num-1).getC())){
                 Toast.makeText(this, "true", Toast.LENGTH_SHORT).show();
             }
-            else{}
-                Toast.makeText(this, "false ...Real answer is "+ans, Toast.LENGTH_SHORT).show();
+            else
+                Toast.makeText(this, "false ...Real answer is "+ans, Toast.LENGTH_SHORT).show();*/
 
         } else if (id == r4.getId()) {
               temp.setAttempt(true);
-              temp.setUserAns(questionsObjs.get(num-1).getD());
-              temp.setRealAns(questionsObjs.get(num-1).getAns());
-            if (ans.equals(questionsObjs.get(num-1).getD())){
+              temp.setUserAns(questionsObjs.get(num-1).getD().trim());
+              temp.setRealAns(questionsObjs.get(num-1).getAns().trim());
+            /*if (ans.equals(questionsObjs.get(num-1).getD())){
                 Toast.makeText(this, "true", Toast.LENGTH_SHORT).show();
             }
             else
                 Toast.makeText(this, "false ...Real answer is "+ans, Toast.LENGTH_SHORT).show();
-        } else
+ */       } else
             Toast.makeText(this, "No More Questions.", Toast.LENGTH_SHORT).show();
 
         attempt[num-1] = true;

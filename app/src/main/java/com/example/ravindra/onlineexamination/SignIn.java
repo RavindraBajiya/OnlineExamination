@@ -285,6 +285,7 @@ public class SignIn extends AppCompatActivity {
                                 Toast.makeText(SignIn.this, "Authentication failed.",
                                         Toast.LENGTH_SHORT).show();
                                 avi.hide();
+                                forgotPassword.setVisibility(View.VISIBLE);
                                 updateUI(null);
                             }
 
