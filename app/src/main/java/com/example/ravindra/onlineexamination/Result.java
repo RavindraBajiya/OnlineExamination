@@ -11,6 +11,7 @@ import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,8 +36,12 @@ public class Result extends AppCompatActivity {
     TextView posMark;
     TextView negMark;
     TextView oveResult;
-    int positive;
-    int negative;
+    TextView oveResultMarks;
+    float positive;
+    float negative;
+    float getMarks;
+    float minusMarks;
+    float oveMarks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,37 +54,55 @@ public class Result extends AppCompatActivity {
         posMark = findViewById(R.id.textView15);
         negMark = findViewById(R.id.textView16);
         oveResult = findViewById(R.id.textView17);
+        oveResultMarks = findViewById(R.id.textView18);
         scrollView = findViewById(R.id.resultScrollView);
         goToListBtn = findViewById(R.id.goListButton);
         Intent intent = getIntent();
         questionsObjs = intent.getParcelableArrayListExtra("totQues");
         question = intent.getIntExtra("question", 0);
         questionStudentResponses = intent.getParcelableArrayListExtra("questionList");
-        ResultAdapter resultAdapter = new ResultAdapter(this, questionStudentResponses, questionsObjs);
+        ArrayList<QuestionsObj> questionsObjs1 = new ArrayList<>();
+        for (int i=0;i<question;i++){
+            questionsObjs1.add(i,questionsObjs.get(i));
+        }
+        ResultAdapter resultAdapter = new ResultAdapter(this, questionStudentResponses, questionsObjs1);
+        Toast.makeText(this, "question obj == "+questionsObjs.size(), Toast.LENGTH_SHORT).show();
         listView = findViewById(R.id.resultList);
         listView.setAdapter(resultAdapter);
-        positive = intent.getIntExtra("positive",0);
-        negative = intent.getIntExtra("negative",0);
+        positive = intent.getFloatExtra("positive",0);
+        negative = intent.getFloatExtra("negative",0);
         setResultData();
     }
 
     private void setResultData() {
         maxQue.setText(question + "");
-        int attempt = questionStudentResponses.size();
+
+        int attempt=0;
+        for (int i=0;questionStudentResponses.size()>i;i++){
+            if (questionStudentResponses.get(i).getAttempt()==1){
+                attempt++;
+            }
+        }
         attQue.setText(attempt + "");
         int right = 0;
         int wrong = 0;
         for (int i=0;i<attempt;i++){
-            if (questionStudentResponses.get(i).getRealAns().trim().equals(questionStudentResponses.get(i).getUserAns().trim())){
-                right++;
+            if (questionStudentResponses.get(i).getAttempt()==1) {
+                if (questionStudentResponses.get(i).getRealAns().trim().equals(questionStudentResponses.get(i).getUserAns().trim())) {
+                    right++;
+                }
             }
         }
         wrong = attempt-right;
         rigQue.setText(right+"");
         wroQue.setText(wrong+"");
+        getMarks = positive*right;
+        minusMarks = negative*wrong;
+        oveMarks = getMarks-minusMarks;
         float result = (positive*right-wrong*negative)*100/(question*positive);
-        posMark.setText(positive+"");
-        negMark.setText(negative+"");
+        posMark.setText(getMarks+"");
+        negMark.setText(minusMarks+"");
+        oveResultMarks.setText(oveMarks+"/"+question*positive);
         oveResult.setText(result+"%");
     }
 

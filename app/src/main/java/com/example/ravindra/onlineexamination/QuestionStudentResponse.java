@@ -8,9 +8,9 @@ import java.io.Serializable;
 public class QuestionStudentResponse implements Parcelable{
     String userAns;
     String realAns;
-    boolean attempt;
+    int attempt;
 
-    public QuestionStudentResponse(String userAns, String realAns, boolean attempt) {
+    public QuestionStudentResponse(String userAns, String realAns, int attempt) {
         this.userAns = userAns;
         this.realAns = realAns;
         this.attempt = attempt;
@@ -22,6 +22,7 @@ public class QuestionStudentResponse implements Parcelable{
     public QuestionStudentResponse(Parcel in) {
         this.userAns = in.readString();
         this.realAns = in.readString();
+        this.attempt = in.readInt();
     }
 
     public String getUserAns() {
@@ -40,11 +41,11 @@ public class QuestionStudentResponse implements Parcelable{
         this.realAns = realAns;
     }
 
-    public boolean isAttempt() {
+    public int getAttempt() {
         return attempt;
     }
 
-    public void setAttempt(boolean attempt) {
+    public void setAttempt(int attempt) {
         this.attempt = attempt;
     }
 
@@ -57,6 +58,7 @@ public class QuestionStudentResponse implements Parcelable{
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(userAns);
         dest.writeString(realAns);
+        dest.writeInt(attempt);
     }
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
         public QuestionStudentResponse createFromParcel(Parcel in) {

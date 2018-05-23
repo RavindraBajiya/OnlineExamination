@@ -50,8 +50,8 @@ public class ExamPageDrower extends AppCompatActivity
     TextView time;
     RadioButton r1, r2, r3, r4;
     int question;
-    int positive;
-    int negative;
+    float positive;
+    float negative;
     Button saveAndNext;
     Boolean lan;
     DocumentReference documentReference;
@@ -63,6 +63,7 @@ public class ExamPageDrower extends AppCompatActivity
     FirebaseDatabase database;
     DrawerLayout drawer;
     ArrayList<QuestionsObj> questionsObjs;
+    ArrayList<QuestionsObj> questionsObjs1;
     ArrayList<QuestionStudentResponse> questionStudentResponses;
     AVLoadingIndicatorView avi;
 
@@ -77,6 +78,7 @@ public class ExamPageDrower extends AppCompatActivity
         avi = findViewById(R.id.avi);
         avi.show();
         questionsObjs = new ArrayList<>();
+        questionsObjs1 = new ArrayList<>();
         questionStudentResponses = new ArrayList<>();
         new CountDownTimer(3600000, 1000) {
 
@@ -118,6 +120,11 @@ public class ExamPageDrower extends AppCompatActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
                 question = Integer.parseInt(dataSnapshot.getValue().toString());
                 attempt = new boolean[question];
+                for (int i = 0; i < question; i++) {
+                    questionStudentResponses.add(i, new QuestionStudentResponse());
+                    questionStudentResponses.get(i).setAttempt(0);
+                }
+                Toast.makeText(ExamPageDrower.this, "tot question = " + questionStudentResponses.size(), Toast.LENGTH_SHORT).show();
                 MyAdapter adapter = new MyAdapter(ExamPageDrower.this, question, questionStudentResponses, attempt);
                 gridView.setAdapter(adapter);
             }
@@ -133,7 +140,7 @@ public class ExamPageDrower extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 positive = Integer.parseInt(dataSnapshot.getValue().toString());
-                maximumMarks.setText(positive+"");
+                maximumMarks.setText(positive + "");
             }
 
             @Override
@@ -145,8 +152,8 @@ public class ExamPageDrower extends AppCompatActivity
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                negative = Integer.parseInt(dataSnapshot.getValue().toString());
-                minusMarking.setText(negative+"");
+                negative = Float.parseFloat(dataSnapshot.getValue().toString());
+                minusMarking.setText(negative + "");
             }
 
             @Override
@@ -158,7 +165,7 @@ public class ExamPageDrower extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 if (num < question) {
-                    RadioGroup radioGroup=findViewById(R.id.radiogroup);
+                    RadioGroup radioGroup = findViewById(R.id.radiogroup);
                     radioGroup.clearCheck();
                     loadEnglish(num + 1);
                     num++;
@@ -215,10 +222,13 @@ public class ExamPageDrower extends AppCompatActivity
                         temp.setC(dataSnapshot.child("q" + i).child("3").getValue().toString());
                         temp.setD(dataSnapshot.child("q" + i).child("4").getValue().toString());
                         temp.setAns(dataSnapshot.child("q" + i).child("ans").getValue().toString());
-                        questionsObjs.add(temp);
+                        questionsObjs1.add(temp);
                     }
                 }
-                loadEnglish(1);
+                for (int i = 0; i < question; i++) {
+                    questionsObjs.add(i, questionsObjs1.get(i));
+                }
+                loadEnglish(num);
                 avi.hide();
             }
 
@@ -285,9 +295,9 @@ public class ExamPageDrower extends AppCompatActivity
             Intent intent = new Intent(this, Result.class);
             intent.putParcelableArrayListExtra("questionList", (ArrayList<? extends Parcelable>) questionStudentResponses);
             intent.putParcelableArrayListExtra("totQues", (ArrayList<? extends Parcelable>) questionsObjs);
-            intent.putExtra("question",question);
-            intent.putExtra("positive",positive);
-            intent.putExtra("negative",negative);
+            intent.putExtra("question", question);
+            intent.putExtra("positive", positive);
+            intent.putExtra("negative", negative);
             startActivity(intent);
             finish();
             return true;
@@ -309,51 +319,28 @@ public class ExamPageDrower extends AppCompatActivity
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        String ans = questionsObjs.get(num-1).getAns();
-        QuestionStudentResponse temp = new QuestionStudentResponse();
-          if (id == r1.getId()) {
-            temp.setAttempt(true);
-            temp.setUserAns(questionsObjs.get(num-1).getA().trim());
-            temp.setRealAns(questionsObjs.get(num-1).getAns().trim());
-           /* if (ans.equals(questionsObjs.get(num-1).getA())){
-                Toast.makeText(this, "true", Toast.LENGTH_SHORT).show();
-            }
-            else
-                Toast.makeText(this, "false ...Real answer is "+ans, Toast.LENGTH_SHORT).show();*/
+        if (id == r1.getId()) {
+            Log.d("ravindrabajiya", "question number == " + num);
+            questionStudentResponses.get(num-1).setUserAns(questionsObjs.get(num - 1).getA().trim());
+            questionStudentResponses.get(num-1).setRealAns(questionsObjs.get(num - 1).getAns().trim());
         } else if (id == r2.getId()) {
-              temp.setAttempt(true);
-              temp.setUserAns(questionsObjs.get(num-1).getB().trim());
-              temp.setRealAns(questionsObjs.get(num-1).getAns().trim());
-           /* if (ans.equals(questionsObjs.get(num-1).getB())){
-                Toast.makeText(this, "true", Toast.LENGTH_SHORT).show();
-            }
-            else
-                Toast.makeText(this, "false ...Real answer is "+ans, Toast.LENGTH_SHORT).show();
-*/        } else if (id == r3.getId()) {
-              temp.setAttempt(true);
-              temp.setUserAns(questionsObjs.get(num-1).getC().trim());
-              temp.setRealAns(questionsObjs.get(num-1).getAns().trim());
-           /* if (ans.equals(questionsObjs.get(num-1).getC())){
-                Toast.makeText(this, "true", Toast.LENGTH_SHORT).show();
-            }
-            else
-                Toast.makeText(this, "false ...Real answer is "+ans, Toast.LENGTH_SHORT).show();*/
-
+            questionStudentResponses.get(num-1).setUserAns(questionsObjs.get(num - 1).getB().trim());
+            questionStudentResponses.get(num-1).setRealAns(questionsObjs.get(num - 1).getAns().trim());
+        } else if (id == r3.getId()) {
+            questionStudentResponses.get(num-1).setUserAns(questionsObjs.get(num - 1).getC().trim());
+            questionStudentResponses.get(num-1).setRealAns(questionsObjs.get(num - 1).getAns().trim());
         } else if (id == r4.getId()) {
-              temp.setAttempt(true);
-              temp.setUserAns(questionsObjs.get(num-1).getD().trim());
-              temp.setRealAns(questionsObjs.get(num-1).getAns().trim());
-            /*if (ans.equals(questionsObjs.get(num-1).getD())){
-                Toast.makeText(this, "true", Toast.LENGTH_SHORT).show();
-            }
-            else
-                Toast.makeText(this, "false ...Real answer is "+ans, Toast.LENGTH_SHORT).show();
- */       } else
+            questionStudentResponses.get(num-1).setUserAns(questionsObjs.get(num - 1).getD().trim());
+            questionStudentResponses.get(num-1).setRealAns(questionsObjs.get(num - 1).getAns().trim());
+        } else
             Toast.makeText(this, "No More Questions.", Toast.LENGTH_SHORT).show();
-
-        attempt[num-1] = true;
-        questionStudentResponses.add(num-1,temp);
-//        Log.d("questions",questionStudentResponses.get(num-1).getRealAns()+" "+questionStudentResponses.get(num-1).getUserAns()+" "+questionStudentResponses.get(num-1).isAttempt());
+        attempt[num - 1] = true;
+//        temp.setAttempt(1);
+        setAnswered(num-1);
+        questionStudentResponses.get(num-1).setAttempt(1);
+        for (int i = 0; i < questionStudentResponses.size(); i++) {
+            Log.d("ravindrabajiya", "question " + i + "  " + questionStudentResponses.get(i).getAttempt());
+        }
     }
 
 
@@ -369,25 +356,42 @@ public class ExamPageDrower extends AppCompatActivity
         r2.setText(o2);
         r3.setText(o3);
         r4.setText(o4);
+        setAnswered(questionNumber-1);
         ques.setText("Question : " + q);
         attempt[questionNumber - 1] = true;
         btnqdt.setText(questionNumber + "/" + question);
+    }
 
+    private void setAnswered(int i) {
+        if (questionStudentResponses.get(i).getAttempt()==1){
+            String userAns = questionStudentResponses.get(i).getUserAns().trim();
+            if (userAns.equals(questionsObjs.get(i).getA().trim())){
+                r1.setChecked(true);
+            }
+            else if (userAns.equals(questionsObjs.get(i).getB().trim())){
+                r2.setChecked(true);
+            }
+            else if (userAns.equals(questionsObjs.get(i).getC().trim())){
+                r3.setChecked(true);
+            }
+            else if (userAns.equals(questionsObjs.get(i).getD().trim())){
+                r4.setChecked(true);
+            }
+            Toast.makeText(this, "setAnswered"+i, Toast.LENGTH_SHORT).show();
+
+        }
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Toast.makeText(this, "position" + position, Toast.LENGTH_SHORT).show();
     }
-
     class MyAdapter extends BaseAdapter {
         LayoutInflater layoutInflater;
         int question;
         Context context;
         boolean attempt[];
         ArrayList<QuestionStudentResponse> questionStudentResponses;
-
-
         public MyAdapter(Context context, int question, ArrayList<QuestionStudentResponse> questionStudentResponses, boolean[] attempt) {
             this.context = context;
             layoutInflater = LayoutInflater.from(context);
@@ -417,23 +421,28 @@ public class ExamPageDrower extends AppCompatActivity
 
             convertView = layoutInflater.inflate(R.layout.drawerlayout, null);
             v = convertView.findViewById(R.id.drawerLayoutButton);
-            if (attempt[position]) {
+            QuestionStudentResponse temp = questionStudentResponses.get(position);
+            if (attempt[position] && temp.getAttempt() == 0) {
+                temp.setAttempt(2);
+            }
+            if (temp.getAttempt() == 2) {
                 v.setBackground(getDrawable(R.drawable.visitedbtn));
-            } else
+            } else if (temp.getAttempt() == 0)
                 v.setBackground(getDrawable(R.drawable.notvisitedbtn));
+            else
+                v.setBackground(getDrawable(R.drawable.answered));
             v.setText((position + 1) + "");
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(ExamPageDrower.this, "click " + (position + 1), Toast.LENGTH_SHORT).show();
                     loadEnglish(position + 1);
+                    setAnswered(position+1);
                     RadioGroup radioGroup = findViewById(R.id.radiogroup);
                     radioGroup.clearCheck();
-                    v.setBackground(getDrawable(R.drawable.visitedbtn));
+                   // v.setBackground(getDrawable(R.drawable.visitedbtn));
                     num = position + 1;
                     drawer = findViewById(R.id.drawer_layout);
                     drawer.closeDrawer(GravityCompat.START);
-
                 }
             });
             return convertView;

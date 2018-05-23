@@ -27,12 +27,12 @@ public class ResultAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return list.size();
+        return questionsObjs.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return list.get(position);
+        return questionsObjs.get(position);
     }
 
     @Override
@@ -83,18 +83,20 @@ public class ResultAdapter extends BaseAdapter {
             c4.setVisibility(View.VISIBLE);
         }
         if (!temp.getAns().equals(list.get(position).getUserAns())) {
-            if (list.get(position).getUserAns().equals(temp.getA())) {
-                option1.setBackgroundColor(context.getColor(R.color.wrongAns));
-                w1.setVisibility(View.VISIBLE);
-            } else if (list.get(position).getUserAns().equals(temp.getB())) {
-                option2.setBackgroundColor(context.getColor(R.color.wrongAns));
-                w2.setVisibility(View.VISIBLE);
-            } else if (list.get(position).getUserAns().equals(temp.getC())) {
-                option3.setBackgroundColor(context.getColor(R.color.wrongAns));
-                w3.setVisibility(View.VISIBLE);
-            } else if (list.get(position).getUserAns().equals(temp.getD())) {
-                option4.setBackgroundColor(context.getColor(R.color.wrongAns));
-                w4.setVisibility(View.VISIBLE);
+            if (list.get(position).getAttempt()==1) {
+                if (list.get(position).getUserAns().equals(temp.getA())) {
+                    option1.setBackgroundColor(context.getColor(R.color.wrongAns));
+                    w1.setVisibility(View.VISIBLE);
+                } else if (list.get(position).getUserAns().equals(temp.getB())) {
+                    option2.setBackgroundColor(context.getColor(R.color.wrongAns));
+                    w2.setVisibility(View.VISIBLE);
+                } else if (list.get(position).getUserAns().equals(temp.getC())) {
+                    option3.setBackgroundColor(context.getColor(R.color.wrongAns));
+                    w3.setVisibility(View.VISIBLE);
+                } else if (list.get(position).getUserAns().equals(temp.getD())) {
+                    option4.setBackgroundColor(context.getColor(R.color.wrongAns));
+                    w4.setVisibility(View.VISIBLE);
+                }
             }
         }
         return convertView;
