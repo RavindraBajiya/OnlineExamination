@@ -63,7 +63,6 @@ public class ExamPageDrower extends AppCompatActivity
     FirebaseDatabase database;
     DrawerLayout drawer;
     ArrayList<QuestionsObj> questionsObjs;
-    ArrayList<QuestionsObj> questionsObjs1;
     ArrayList<QuestionStudentResponse> questionStudentResponses;
     AVLoadingIndicatorView avi;
 
@@ -78,7 +77,6 @@ public class ExamPageDrower extends AppCompatActivity
         avi = findViewById(R.id.avi);
         avi.show();
         questionsObjs = new ArrayList<>();
-        questionsObjs1 = new ArrayList<>();
         questionStudentResponses = new ArrayList<>();
         new CountDownTimer(3600000, 1000) {
 
@@ -210,28 +208,42 @@ public class ExamPageDrower extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        getQuestionsList(test);
+         myRef = myRef1.child("total_questions");
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                int tot = Integer.parseInt(dataSnapshot.getValue().toString());
+                getQuestionsList(test,tot);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w("aaa", "Failed to read value.", error.toException());
+            }
+        });
+
     }
 
-    private void getQuestionsList(final String test) {
+    private void getQuestionsList(final String test, final int tot) {
         final DatabaseReference reference = database.getReference(test);
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    for (int i = 1; dataSnapshot.child("q" + i).exists(); i++) {
+                    int random = new java.util.Random().nextInt(tot);
+                    for (int i = 1; dataSnapshot.child("q" + random).exists()&&i<=question; i++) {
                         QuestionsObj temp = new QuestionsObj();
-                        temp.setQ(dataSnapshot.child("q" + i).child("ques").getValue().toString());
-                        temp.setA(dataSnapshot.child("q" + i).child("1").getValue().toString());
-                        temp.setB(dataSnapshot.child("q" + i).child("2").getValue().toString());
-                        temp.setC(dataSnapshot.child("q" + i).child("3").getValue().toString());
-                        temp.setD(dataSnapshot.child("q" + i).child("4").getValue().toString());
-                        temp.setAns(dataSnapshot.child("q" + i).child("ans").getValue().toString());
-                        questionsObjs1.add(temp);
+                        temp.setQ(dataSnapshot.child("q" + random).child("ques").getValue().toString().trim());
+                        temp.setA(dataSnapshot.child("q" + random).child("1").getValue().toString().trim());
+                        temp.setB(dataSnapshot.child("q" + random).child("2").getValue().toString().trim());
+                        temp.setC(dataSnapshot.child("q" + random).child("3").getValue().toString().trim());
+                        temp.setD(dataSnapshot.child("q" + random).child("4").getValue().toString().trim());
+                        temp.setAns(dataSnapshot.child("q" + random).child("ans").getValue().toString().trim());
+                        questionsObjs.add(temp);
+                        Log.d("ravindrabajiya",questionsObjs.size()+"  random"+random);
+                        random = new java.util.Random().nextInt(tot);
                     }
-                }
-                for (int i = 0; i < question; i++) {
-                    questionsObjs.add(i, questionsObjs1.get(i));
                 }
                 loadEnglish(num);
                 avi.hide();
