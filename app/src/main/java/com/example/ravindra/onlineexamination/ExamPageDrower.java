@@ -1,5 +1,6 @@
 package com.example.ravindra.onlineexamination;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -54,7 +55,6 @@ public class ExamPageDrower extends AppCompatActivity
     float negative;
     Button saveAndNext;
     Boolean lan;
-    DocumentReference documentReference;
     int num = 1;
     Button v;
     String test;
@@ -124,7 +124,7 @@ public class ExamPageDrower extends AppCompatActivity
                     questionStudentResponses.add(i, new QuestionStudentResponse());
                     questionStudentResponses.get(i).setAttempt(0);
                 }
-                Toast.makeText(ExamPageDrower.this, "tot question = " + questionStudentResponses.size(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(ExamPageDrower.this, "tot question = " + questionStudentResponses.size(), Toast.LENGTH_SHORT).show();
                 MyAdapter adapter = new MyAdapter(ExamPageDrower.this, question, questionStudentResponses, attempt);
                 gridView.setAdapter(adapter);
             }
@@ -162,15 +162,20 @@ public class ExamPageDrower extends AppCompatActivity
             }
         });
         saveAndNext.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
                 if (num < question) {
+                    if (num==question-1){
+                        saveAndNext.setText("Save & finish");
+                    }
                     RadioGroup radioGroup = findViewById(R.id.radiogroup);
                     radioGroup.clearCheck();
                     loadEnglish(num + 1);
                     num++;
-                } else {
-                    Toast.makeText(ExamPageDrower.this, "No More Questions.", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    resultActivity();
                 }
             }
         });
@@ -246,7 +251,7 @@ public class ExamPageDrower extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
         } else {
             final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-            alertDialogBuilder.setMessage("Are You Sure You Want To Finish The Exam.");
+            alertDialogBuilder.setMessage("Are You Sure You Want To Exit The Exam.");
             alertDialogBuilder.setPositiveButton("Yes",
                     new DialogInterface.OnClickListener() {
                         @Override
@@ -291,19 +296,41 @@ public class ExamPageDrower extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.finish) {
-            Toast.makeText(this, "Finish", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(this, Result.class);
-            intent.putParcelableArrayListExtra("questionList", (ArrayList<? extends Parcelable>) questionStudentResponses);
-            intent.putParcelableArrayListExtra("totQues", (ArrayList<? extends Parcelable>) questionsObjs);
-            intent.putExtra("question", question);
-            intent.putExtra("positive", positive);
-            intent.putExtra("negative", negative);
-            startActivity(intent);
-            finish();
+            resultActivity();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void resultActivity() {
+
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setMessage("Are You Sure You Want To Finish The Exam.");
+        alertDialogBuilder.setPositiveButton("Finish",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        Intent intent = new Intent(ExamPageDrower.this, Result.class);
+                        intent.putParcelableArrayListExtra("questionList", (ArrayList<? extends Parcelable>) questionStudentResponses);
+                        intent.putParcelableArrayListExtra("totQues", (ArrayList<? extends Parcelable>) questionsObjs);
+                        intent.putExtra("question", question);
+                        intent.putExtra("positive", positive);
+                        intent.putExtra("negative", negative);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+
+        alertDialogBuilder.setNegativeButton("Continue", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(ExamPageDrower.this, "Continue...", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -346,6 +373,12 @@ public class ExamPageDrower extends AppCompatActivity
 
     void loadEnglish(final int questionNumber) {
         lan = true;
+        if (questionNumber==question){
+            saveAndNext.setText("save & finish");
+        }
+        else{
+            saveAndNext.setText("save & next");
+        }
         QuestionsObj questionsObj = questionsObjs.get(questionNumber - 1);
         String o1 = questionsObj.getA();
         String o2 = questionsObj.getB();
@@ -364,6 +397,8 @@ public class ExamPageDrower extends AppCompatActivity
 
     private void setAnswered(int i) {
         if (questionStudentResponses.get(i).getAttempt()==1){
+            RadioGroup radioGroup = findViewById(R.id.radiogroup);
+            radioGroup.clearCheck();
             String userAns = questionStudentResponses.get(i).getUserAns().trim();
             if (userAns.equals(questionsObjs.get(i).getA().trim())){
                 r1.setChecked(true);
@@ -377,7 +412,7 @@ public class ExamPageDrower extends AppCompatActivity
             else if (userAns.equals(questionsObjs.get(i).getD().trim())){
                 r4.setChecked(true);
             }
-            Toast.makeText(this, "setAnswered"+i, Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "setAnswered"+i, Toast.LENGTH_SHORT).show();
 
         }
     }
@@ -435,10 +470,9 @@ public class ExamPageDrower extends AppCompatActivity
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    loadEnglish(position + 1);
-                    setAnswered(position+1);
                     RadioGroup radioGroup = findViewById(R.id.radiogroup);
                     radioGroup.clearCheck();
+                    loadEnglish(position+1);
                    // v.setBackground(getDrawable(R.drawable.visitedbtn));
                     num = position + 1;
                     drawer = findViewById(R.id.drawer_layout);
