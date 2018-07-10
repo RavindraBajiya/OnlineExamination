@@ -62,7 +62,7 @@ public class ExaminationList extends AppCompatActivity implements AdapterView.On
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Toast.makeText(this, "show test" + (position + 1), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "show test" + (position + 1), Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this, ExamPageDrower.class);
         intent.putExtra("exam", "test" + (position + 1));
         startActivity(intent);
